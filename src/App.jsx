@@ -35,7 +35,7 @@ function App() {
   return (
     <div className="relative min-h-screen ">
       <SignedOut>
-        <div className="fixed inset-0 bg-gradient-to-br from-black/80 to-purple-900/80 backdrop-blur-md flex items-center justify-center z-50">
+        {/* <div className="fixed inset-0 bg-gradient-to-br from-black/80 to-purple-900/80 backdrop-blur-md flex items-center justify-center z-50">
           <div className="min-h-screen flex flex-col justify-center backdrop-blur-lg border border-white/20 p-12 rounded-2xl shadow-2xl text-center max-w-md mx-auto">
             <h2 className="text-5xl font-bold text-white mb-4 tracking-tight">
               Globetrotter
@@ -54,7 +54,8 @@ function App() {
               </button>
             </SignInButton>
           </div>
-        </div>
+        </div> */}
+        <h1>SignInButton</h1>
       </SignedOut>
 
 
