@@ -359,7 +359,6 @@ export default function Destinations() {
     const fetchDestinations = async () => {
       setIsLoading(true);
       try {
-        console.log('Fetching destinations for type:', selectedType);
         const response = await fetch(`${API_BASE_URL}/api/destinations/type/${selectedType}`);
         
         if (!response.ok) {
@@ -386,7 +385,7 @@ export default function Destinations() {
   useEffect(() => {
     if (!destinations.length) return;
     
-    let filtered = destinations;
+    let filtered = [...destinations]; // Create a copy of destinations array
 
     // Filter by search query
     if (searchQuery) {
@@ -396,17 +395,18 @@ export default function Destinations() {
           dest.name.toLowerCase().includes(searchLower) ||
           dest.country.toLowerCase().includes(searchLower) ||
           dest.description.toLowerCase().includes(searchLower) ||
-          dest.categories.some(cat => cat.toLowerCase().includes(searchLower))
+          (dest.categories && dest.categories.some(cat => cat.toLowerCase().includes(searchLower)))
         );
       });
     }
 
     // Filter by price range
     filtered = filtered.filter((dest) => {
-      const [minPrice, maxPrice] = dest.priceRange;
+      const [minPrice, maxPrice] = dest.priceRange || [0, 0];
       return minPrice >= priceRange[0] && maxPrice <= priceRange[1];
     });
 
+    console.log('Filtered destinations:', filtered); // Add this to debug
     setFilteredDestinations(filtered);
   }, [searchQuery, destinations, priceRange]); 
 
@@ -515,7 +515,11 @@ export default function Destinations() {
                     ? "bg-gray-200 text-indigo-600"
                     : "text-gray-200 hover:bg-white/20"
                 }`}
-                onClick={() => setSelectedType("national")}
+                onClick={() => {
+                  setSelectedType("national");
+                  setSearchQuery("");
+                  setPriceRange([0, 5000]);
+                }}
               >
                 <MapPin className="mr-2 h-4 w-4" />
                 National
@@ -527,7 +531,11 @@ export default function Destinations() {
                     ? "bg-gray-200 text-indigo-600"
                     : "text-gray-200 hover:bg-white/20"
                 }`}
-                onClick={() => setSelectedType("international")}
+                onClick={() => {
+                  setSelectedType("international");
+                  setSearchQuery("");
+                  setPriceRange([0, 5000]);
+                }}
               >
                 <MapPin className="mr-2 h-4 w-4" />
                 International
