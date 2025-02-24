@@ -356,7 +356,7 @@ export default function Destinations() {
       try {
         console.log('Fetching destinations for type:', selectedType);
         // Add your backend URL here (adjust the URL according to your setup)
-        const response = await fetch(`http://localhost:5000/api/destinations/type/${selectedType}`);
+        const response = await fetch(`https://globe-k928.vercel.app/api/destinations/type/${selectedType}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
