@@ -14,7 +14,12 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: ['https://globe-bach.vercel.app/', 'http://localhost:5000', 'http://localhost:5173', 'https://globe-beryl.vercel.app/'],
+  origin: [
+    'https://globe-bach.vercel.app',
+    'https://globe-beryl.vercel.app',
+    'http://localhost:5000',
+    'http://localhost:5173'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
