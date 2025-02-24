@@ -20,7 +20,7 @@ import { motion } from "framer-motion";
 
 // Add this near the top of your file
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://globe-k928.vercel.app'
+  ? 'https://globe-bach.vercel.app/'
   : 'http://localhost:5000';
 
 export default function Destinations() {
