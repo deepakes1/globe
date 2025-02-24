@@ -16,7 +16,7 @@ const app = express();
 app.use(cors({
   origin: [
     'https://globe-bg.vercel.app',
-    'https://globe-beryl.vercel.app',
+    'https://globe-frontend-bay.vercel.app',
     'http://localhost:5000',
     'http://localhost:5173'
   ],
