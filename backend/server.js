@@ -17,7 +17,7 @@ app.use(express.json());
 connectDB();
 
 // Routes
-app.get('/api', (req, res) => {
+app.get('/', (req, res) => {
   res.send('This is backend');
 });
 
