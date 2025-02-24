@@ -18,6 +18,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
+// Add this near the top of your file
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://globe-k928.vercel.app'
+  : 'http://localhost:5000';
+
 export default function Destinations() {
   const [destinations, setDestinations] = useState([]);
   const [filteredDestinations, setFilteredDestinations] = useState([]);
@@ -355,8 +360,7 @@ export default function Destinations() {
       setIsLoading(true);
       try {
         console.log('Fetching destinations for type:', selectedType);
-        // Add your backend URL here (adjust the URL according to your setup)
-        const response = await fetch(`https://globe-k928.vercel.app/api/destinations/type/${selectedType}`);
+        const response = await fetch(`${API_BASE_URL}/api/destinations/type/${selectedType}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -375,7 +379,6 @@ export default function Destinations() {
         setIsLoading(false);
       }
     };
-
 
     fetchDestinations();
   }, [selectedType]);

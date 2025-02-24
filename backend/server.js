@@ -12,8 +12,15 @@ dotenv.config();
 // Create express app
 const app = express();
 
+// CORS configuration
+app.use(cors({
+  origin: ['https://globe-k928.vercel.app/', 'http://localhost:5000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
