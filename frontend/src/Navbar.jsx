@@ -6,6 +6,9 @@ import {
   DrawerTrigger,
   DrawerClose
 } from "@/components/ui/drawer"
+import { Menu } from "lucide-react"
+
+import Img from "../src/assets/Untitled-1.jpg"
 
 import {Link} from "react-router-dom"
 import logo from "../src/assets/logo.avif"
@@ -15,7 +18,7 @@ function Navbar() {
     <div className="bg-teal-600 text-white">
       <div className="flex justify-between items-center w-[90vw] mx-auto p-3">
        <Link to= "/">
-       <img src={logo} className='h-12 w-12 object-cover rounded-full' alt="" />
+       <img src={Img} className='md:h-[49px] w-32 object-contain rounded-full' alt="" />
        </Link>
 
         <div className="flex gap-3 items-center">
@@ -30,7 +33,7 @@ function Navbar() {
 
           <div className="md:hidden flex items-center gap-3">
            <Drawer>
-            <DrawerTrigger>GlobeTrotter</DrawerTrigger>
+            <DrawerTrigger><Menu className="h-6 w-6" /></DrawerTrigger>
             <DrawerContent className="bg-teal-600 text-white text-center border-0 p-4">
                 <DrawerClose asChild>
                   <Link to="/Destinations" className="text-lg block">Destinations</Link>
