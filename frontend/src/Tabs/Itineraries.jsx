@@ -16,6 +16,11 @@ import { Plane, Hotel, MapPin, Utensils, Camera, Plus, Trash2, Edit, CalendarIco
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from "@clerk/clerk-react";
 
+// Add API base URL configuration
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://globe-bg.vercel.app'
+  : 'http://localhost:5000';
+
 export default function ItinerariesPage() {
   const [itineraries, setItineraries] = useState([]);
   const [selectedItinerary, setSelectedItinerary] = useState(null);
@@ -175,7 +180,6 @@ export default function ItinerariesPage() {
     if (!selectedItinerary || !user) return;
 
     try {
-      // Prepare the data for database storage
       const bookingData = {
         user_id: user.primaryEmailAddress.emailAddress,
         itinerary_id: selectedItinerary.id,
@@ -192,8 +196,8 @@ export default function ItinerariesPage() {
         }))
       };
 
-      // Make API call to store data in your database
-      const response = await fetch('http://localhost:5000/api/itineraries', {
+      // Update the API endpoint to use API_BASE_URL
+      const response = await fetch(`${API_BASE_URL}/api/itineraries`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -205,13 +209,11 @@ export default function ItinerariesPage() {
         throw new Error('Failed to store booking data');
       }
 
-      // If successful, navigate to the bookings page
       navigate('/Bookings', { 
         state: { itineraryData: selectedItinerary } 
       });
     } catch (error) {
       console.error('Error storing booking data:', error);
-      // You might want to show an error message to the user here
     }
   };
 
