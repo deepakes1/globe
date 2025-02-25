@@ -37,6 +37,22 @@ const Chatbot = ({ isOpen, onClose }) => {
       responses: [
         "You can reach our human support team at support@globetrotter.com or call us at 1-800-GLOBE during business hours."
       ]
+    },
+    thanks: {
+      patterns: ['thanks', 'thank you', 'appreciate it', 'thx'],
+      responses: [
+        "You're welcome! Let me know if you need anything else!",
+        "Happy to help! Feel free to ask more questions!",
+        "Anytime! Have a great day!"
+      ]
+    },
+    goodbye: {
+      patterns: ['bye', 'goodbye', 'see you', 'cya'],
+      responses: [
+        "Goodbye! Have a wonderful day!",
+        "Take care! Come back if you need more help!",
+        "Bye! Thanks for chatting with Globetrotter!"
+      ]
     }
   };
 
