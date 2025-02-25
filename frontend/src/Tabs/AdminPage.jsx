@@ -23,13 +23,17 @@ export default function AdminPage() {
   });
   const [message, setMessage] = useState('');
 
+  const API_BASE_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://globe-bg.vercel.app'
+    : 'http://localhost:5000';
+
   useEffect(() => {
     fetchDestinations();
   }, []);
 
   const fetchDestinations = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/destinations');
+      const response = await fetch(`${API_BASE_URL}/api/destinations`);
       if (response.ok) {
         const data = await response.json();
         setDestinations(data);
@@ -44,7 +48,7 @@ export default function AdminPage() {
       try {
         console.log('Attempting to delete destination with ID:', id);
         
-        const response = await fetch(`http://localhost:5000/api/destinations/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/destinations/${id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json'
@@ -77,7 +81,7 @@ export default function AdminPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/destinations', {
+      const response = await fetch(`${API_BASE_URL}/api/destinations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
