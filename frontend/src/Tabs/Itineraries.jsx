@@ -19,21 +19,12 @@ import { useUser } from "@clerk/clerk-react";
 export default function ItinerariesPage() {
   const [itineraries, setItineraries] = useState([]);
   const [selectedItinerary, setSelectedItinerary] = useState(null);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [newActivity, setNewActivity] = useState({
-    name: "",
-    type: "other",
-    details: "",
-    time: "",
-  });
-  const [newItinerary, setNewItinerary] = useState({
-    name: "",
-    destination: "",
-    days: []
-  });
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useUser();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingActivity, setEditingActivity] = useState(null);
+  const [editingDayIndex, setEditingDayIndex] = useState(null);
 
   useEffect(() => {
     if (location.state?.destinationData) {
@@ -79,24 +70,6 @@ export default function ItinerariesPage() {
 
     setItineraries([...itineraries, newItinerary]);
     setSelectedItinerary(newItinerary);
-  };
-
-  const handleCreateItinerary = () => {
-    const newId = (itineraries.length + 1).toString();
-    const createdItinerary = { 
-      ...newItinerary, 
-      id: newId,
-      days: newItinerary.days 
-    };
-    setItineraries([...itineraries, createdItinerary]);
-    setIsCreateDialogOpen(false);
-    setNewItinerary({
-      name: "",
-      destination: "",
-      startDate: new Date(),
-      endDate: new Date(),
-      days: []
-    });
   };
 
   const handleDeleteItinerary = (id) => {
@@ -242,80 +215,44 @@ export default function ItinerariesPage() {
     }
   };
 
+  const handleEditActivity = (dayIndex, activity) => {
+    setEditingActivity(activity);
+    setEditingDayIndex(dayIndex);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveActivityEdit = () => {
+    if (!selectedItinerary || !editingActivity || editingDayIndex === null) return;
+
+    const updatedDays = selectedItinerary.days.map((day, index) => {
+      if (index === editingDayIndex) {
+        return {
+          ...day,
+          activities: day.activities.map((activity) =>
+            activity.id === editingActivity.id ? editingActivity : activity
+          ),
+        };
+      }
+      return day;
+    });
+
+    const updatedItinerary = { ...selectedItinerary, days: updatedDays };
+    setSelectedItinerary(updatedItinerary);
+    setItineraries(
+      itineraries.map((itinerary) =>
+        itinerary.id === selectedItinerary.id ? updatedItinerary : itinerary
+      )
+    );
+
+    setIsEditDialogOpen(false);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 bg-gradient-to-br from-blue-50 to-purple-50">
       <h1 className="text-4xl font-bold mb-8 text-indigo-800">My Itineraries</h1>
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold text-indigo-700">Itinerary List</h2>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-gray-300 hover:bg-gray-200">
-              <Plus className="mr-2 h-4 w-4" /> Create New Itinerary
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Create New Itinerary</DialogTitle>
-              <DialogDescription>
-                Enter the details for your new itinerary. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
-                </Label>
-                <Input
-                  id="name"
-                  value={newItinerary.name}
-                  onChange={(e) => setNewItinerary({ ...newItinerary, name: e.target.value })}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="destination" className="text-right">
-                  Destination
-                </Label>
-                <Input
-                  id="destination"
-                  value={newItinerary.destination}
-                  onChange={(e) => setNewItinerary({ ...newItinerary, destination: e.target.value })}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="startDate" className="text-right">
-                  Start Date
-                </Label>
-                <div className="col-span-3">
-                  <Calendar
-                    value={newItinerary.startDate}
-                    onChange={(date) => setNewItinerary({ ...newItinerary, startDate: date })}
-                    className="rounded-md border"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="endDate" className="text-right">
-                  End Date
-                </Label>
-                <div className="col-span-3">
-                  <Calendar
-                    value={newItinerary.endDate}
-                    onChange={(date) => setNewItinerary({ ...newItinerary, endDate: date })}
-                    className="rounded-md border"
-                  />
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit" onClick={handleCreateItinerary}>
-                Save Itinerary
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -401,14 +338,24 @@ export default function ItinerariesPage() {
                                         </p>
                                       </div>
                                     </div>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="hover:text-red-600"
-                                      onClick={() => handleDeleteActivity(dayIndex, activity.id)}
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
+                                    <div className="flex space-x-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="hover:text-indigo-600"
+                                        onClick={() => handleEditActivity(dayIndex, activity)}
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="hover:text-red-600"
+                                        onClick={() => handleDeleteActivity(dayIndex, activity.id)}
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
                                   </li>
                                 )}
                               </Draggable>
@@ -444,6 +391,61 @@ export default function ItinerariesPage() {
           )}
         </Card>
       </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>Edit Activity</DialogTitle>
+          </DialogHeader>
+          {editingActivity && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="time">Time</Label>
+                <Input
+                  id="time"
+                  type="time"
+                  value={editingActivity.time}
+                  onChange={(e) =>
+                    setEditingActivity({
+                      ...editingActivity,
+                      time: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="name">Activity Name</Label>
+                <Input
+                  id="name"
+                  value={editingActivity.name}
+                  onChange={(e) =>
+                    setEditingActivity({
+                      ...editingActivity,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="details">Details</Label>
+                <Textarea
+                  id="details"
+                  value={editingActivity.details}
+                  onChange={(e) =>
+                    setEditingActivity({
+                      ...editingActivity,
+                      details: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={handleSaveActivityEdit}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
