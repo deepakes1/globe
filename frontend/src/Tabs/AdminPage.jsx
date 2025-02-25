@@ -132,7 +132,7 @@ export default function AdminPage() {
     destination => destination.type === activeTab
   );
 
-  if (user?.primaryEmailAddress?.emailAddress !== 'deepakes2003@gmail.com') {
+  if (user?.primaryEmailAddress?.emailAddress !== 'atrotter486@gmail.com') {
     return (
       <div className="container mx-auto p-4">
         <Card className="max-w-lg mx-auto">
