@@ -6,6 +6,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plane, Hotel, MapPin, Calendar, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://globe-bg.vercel.app'
+  : 'http://localhost:5000';
+
 export default function MyBookings() {
   const { user } = useUser();
   const [bookings, setBookings] = useState({
@@ -23,17 +27,16 @@ export default function MyBookings() {
         const userEmail = user.primaryEmailAddress.emailAddress;
         console.log('Fetching bookings for:', userEmail);
         
-        const response = await fetch(`http://localhost:5000/api/bookings/user/${userEmail}`);
+        const response = await fetch(`${API_BASE_URL}/api/bookings/user/${userEmail}`);
         
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch bookings');
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         console.log('Received bookings:', data);
         
-        // Ensure the data has the expected structure
         setBookings({
           travel: data.travel || [],
           hotels: data.hotels || [],
@@ -41,7 +44,8 @@ export default function MyBookings() {
         });
       } catch (error) {
         console.error('Error fetching bookings:', error);
-        // Set empty arrays to prevent mapping errors
+        // Show user-friendly error message
+        alert('Unable to fetch your bookings. Please try again later.');
         setBookings({
           travel: [],
           hotels: [],
@@ -59,7 +63,7 @@ export default function MyBookings() {
     if (!window.confirm('Are you sure you want to delete this booking?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/bookings/${type}/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/bookings/${type}/${id}`, {
         method: 'DELETE'
       });
 
