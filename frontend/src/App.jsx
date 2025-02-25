@@ -9,11 +9,13 @@ import Bookings from './Tabs/Bookings';
 import MyBookings from './Tabs/MyBookings';
 import AdminPage from './Tabs/AdminPage';
 import { Route, Routes } from 'react-router-dom';
+import Chatbot from './components/Chatbot';
 
 
 function App() {
   const { user, isLoaded } = useUser(); // Get the current user information
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   useEffect(() => {
     if (isLoaded && user) {
@@ -91,6 +93,30 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </SignedIn>
+
+      {/* Chatbot Icon and Component */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <button 
+          className="bg-purple-600 hover:bg-purple-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110"
+          onClick={() => setIsChatbotOpen(!isChatbotOpen)}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-6 w-6" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" 
+            />
+          </svg>
+        </button>
+      </div>
+      <Chatbot isOpen={isChatbotOpen} onClose={() => setIsChatbotOpen(false)} />
     </div>
   );
 }

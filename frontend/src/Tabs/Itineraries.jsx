@@ -248,20 +248,20 @@ export default function ItinerariesPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gradient-to-br from-blue-50 to-purple-50">
-      <h1 className="text-4xl font-bold mb-8 text-indigo-800">My Itineraries</h1>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 bg-gradient-to-br from-blue-50 to-purple-50">
+      <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-8 text-indigo-800">My Itineraries</h1>
 
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-indigo-700">Itinerary List</h2>
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-semibold text-indigo-700">Itinerary List</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <Card className="col-span-1 border-2 border-indigo-100 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
-            <CardTitle className="text-indigo-800">Itineraries</CardTitle>
+            <CardTitle className="text-lg sm:text-xl text-indigo-800">Itineraries</CardTitle>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[600px]">
+            <ScrollArea className="h-[300px] sm:h-[600px]">
               {itineraries.map((itinerary) => (
                 <div
                   key={itinerary.id}
@@ -282,7 +282,7 @@ export default function ItinerariesPage() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-1 md:col-span-2 border-2 border-indigo-100 shadow-lg">
+        <Card className="col-span-1 lg:col-span-2 border-2 border-indigo-100 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
             <CardTitle className="text-indigo-800">
               {selectedItinerary ? selectedItinerary.name : "Select an Itinerary"}
@@ -295,7 +295,7 @@ export default function ItinerariesPage() {
             {selectedItinerary ? (
               <DragDropContext onDragEnd={onDragEnd}>
                 <Tabs defaultValue={`day-0`}>
-                  <TabsList className="mb-4 bg-indigo-100">
+                  <TabsList className="mb-4 bg-indigo-100 flex-wrap">
                     {selectedItinerary.days.map((_, index) => (
                       <Droppable key={`tab-${index}`} droppableId={`tab-${index}`}>
                         {(provided) => (
@@ -369,20 +369,20 @@ export default function ItinerariesPage() {
                 </Tabs>
               </DragDropContext>
             ) : (
-              <p className="text-indigo-600">Select an itinerary to view and edit details</p>
+              <p className="text-indigo-600 text-center py-4">Select an itinerary to view and edit details</p>
             )}
           </CardContent>
           {selectedItinerary && (
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex flex-col sm:flex-row justify-between gap-2">
               <Button 
                 variant="destructive" 
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
                 onClick={() => handleDeleteItinerary(selectedItinerary.id)}
               >
                 <Trash2 className="mr-2 h-4 w-4" /> Delete Itinerary
               </Button>
               <Button 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto"
                 onClick={handleNextClick}
               >
                 Next <ArrowRight className="ml-2 h-4 w-4" />
