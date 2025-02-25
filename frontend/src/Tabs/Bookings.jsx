@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useUser } from "@clerk/clerk-react";
 
+// Add API base URL configuration
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://globe-bg.vercel.app'
+  : 'http://localhost:5000';
 
 function Bookings() {
   const { user } = useUser();
@@ -244,7 +248,7 @@ function Bookings() {
           total_amount: parseInt(selectedOption.price.replace('₹', '')) * numberOfSeats
         };
 
-        await fetch('http://localhost:5000/api/bookings/travel/book', {
+        await fetch(`${API_BASE_URL}/api/bookings/travel/book`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -265,7 +269,7 @@ function Bookings() {
           amenities: selectedOption.amenities
         };
 
-        await fetch('http://localhost:5000/api/bookings/hotels/book', {
+        await fetch(`${API_BASE_URL}/api/bookings/hotels/book`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
