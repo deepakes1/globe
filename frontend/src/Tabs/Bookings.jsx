@@ -25,6 +25,7 @@ function Bookings() {
   const [checkOut, setCheckOut] = useState('');
   const [showHotelOptions, setShowHotelOptions] = useState(false);
   const [selectedHotelOption, setSelectedHotelOption] = useState(null);
+  const [numberOfDays, setNumberOfDays] = useState(1);
 
   const transportOptions = [
     { 
@@ -225,6 +226,11 @@ function Bookings() {
     setShowPaymentModal(true);
   };
 
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+    setNumberOfDays(1);
+  };
+
   const handlePaymentSuccess = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -304,11 +310,18 @@ function Bookings() {
     setShowHotelOptions(false);
     setCheckIn('');
     setCheckOut('');
+    setNumberOfDays(1);
   };
 
   const handleHotelSearch = (e) => {
     e.preventDefault();
     if (checkIn && checkOut) {
+      // Calculate number of days between check-in and check-out
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+      const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      setNumberOfDays(daysDiff > 0 ? daysDiff : 1);
       setShowHotelOptions(true);
     }
   };
@@ -519,9 +532,60 @@ function Bookings() {
       {showPaymentModal && (
         <div className="modal-overlay">
           <div className="modal-content payment-modal">
-            <button className="close-button" onClick={() => setShowPaymentModal(false)}>×</button>
+            <button className="close-button" onClick={handleClosePaymentModal}>×</button>
             <h2>Payment Details</h2>
             <div className="payment-container">
+              <div className="payment-summary">
+                <h3>Booking Summary</h3>
+                {selectedHotel ? (
+                  // Hotel booking summary
+                  <div className="summary-details">
+                    <p><strong>{selectedOption.name}</strong></p>
+                    <p>Check-in: {new Date(checkIn).toLocaleDateString()}</p>
+                    <p>Check-out: {new Date(checkOut).toLocaleDateString()}</p>
+                    <p>Number of rooms: {numberOfSeats}</p>
+                    <p>Number of nights: {numberOfDays}</p>
+                    <p>Price per room per night: {selectedOption.price}</p>
+                    <div className="price-calculation hotel-price-calculation">
+                      <h4>Price Calculation:</h4>
+                      <div className="calculation-formula">
+                        <div className="calc-item">
+                          <span className="calc-label">Rooms:</span>
+                          <span className="calc-value">{numberOfSeats}</span>
+                        </div>
+                        <span className="calc-operator">×</span>
+                        <div className="calc-item">
+                          <span className="calc-label">Price per night:</span>
+                          <span className="calc-value">{selectedOption.price}</span>
+                        </div>
+                        <span className="calc-operator">×</span>
+                        <div className="calc-item">
+                          <span className="calc-label">Nights:</span>
+                          <span className="calc-value">{numberOfDays}</span>
+                        </div>
+                      </div>
+                      <div className="total-calculation">
+                        <span className="total-label">Total:</span>
+                        <span className="total-value">₹{(parseInt(selectedOption.price.replace('₹', '')) * numberOfSeats * numberOfDays).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Transport booking summary
+                  <div className="summary-details">
+                    <p><strong>{selectedOption.name}</strong></p>
+                    <p>From: {fromPlace}</p>
+                    <p>To: {toPlace}</p>
+                    <p>Date: {new Date(date).toLocaleDateString()}</p>
+                    <p>Number of seats: {numberOfSeats}</p>
+                    <p>Price per seat: {selectedOption.price}</p>
+                    <div className="price-calculation">
+                      <p>Total price: {numberOfSeats} seats × {selectedOption.price} = 
+                      ₹{(parseInt(selectedOption.price.replace('₹', '')) * numberOfSeats).toLocaleString()}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
               <div className="payment-card">
                 <div className="card-header">
                   <h3>Credit/Debit Card</h3>
@@ -559,7 +623,9 @@ function Bookings() {
                         <span>Processing...</span>
                       </div>
                     ) : (
-                      `Pay ₹${parseInt(selectedOption.price.replace('₹', '')) * numberOfSeats}`
+                      selectedHotel ? 
+                      `Pay ₹${(parseInt(selectedOption.price.replace('₹', '')) * numberOfSeats * numberOfDays).toLocaleString()}` :
+                      `Pay ₹${(parseInt(selectedOption.price.replace('₹', '')) * numberOfSeats).toLocaleString()}`
                     )}
                   </button>
                 </form>
@@ -740,10 +806,80 @@ function Bookings() {
           margin-top: 20px;
         }
         .payment-modal {
-          max-width: 500px;
+          max-width: 600px;
         }
         .payment-container {
           padding: 20px;
+        }
+        .payment-summary {
+          background: #f0f8ff;
+          border-radius: 10px;
+          padding: 20px;
+          margin-bottom: 20px;
+        }
+        .summary-details p {
+          margin: 8px 0;
+        }
+        .price-calculation {
+          margin-top: 15px;
+          padding-top: 10px;
+          border-top: 1px dashed #ccc;
+          font-weight: bold;
+        }
+        .hotel-price-calculation {
+          background-color: #f0f7ff;
+          padding: 15px;
+          border-radius: 8px;
+          border: 1px solid #cce5ff;
+          margin-top: 20px;
+        }
+        .hotel-price-calculation h4 {
+          margin: 0 0 12px 0;
+          color: #0056b3;
+        }
+        .calculation-formula {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-bottom: 15px;
+        }
+        .calc-item {
+          display: flex;
+          flex-direction: column;
+          text-align: center;
+          background-color: white;
+          padding: 8px 15px;
+          border-radius: 6px;
+          border: 1px solid #cce5ff;
+        }
+        .calc-label {
+          font-size: 12px;
+          color: #666;
+          margin-bottom: 4px;
+        }
+        .calc-value {
+          font-weight: bold;
+          color: #0056b3;
+        }
+        .calc-operator {
+          font-size: 24px;
+          color: #0056b3;
+        }
+        .total-calculation {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 15px;
+          padding-top: 15px;
+          border-top: 1px solid #cce5ff;
+        }
+        .total-label {
+          font-size: 18px;
+        }
+        .total-value {
+          font-size: 20px;
+          color: #0056b3;
         }
         .payment-card {
           background: #f8f9fa;
