@@ -35,6 +35,8 @@ export default function Destinations() {
   const [selectedDays, setSelectedDays] = useState("");
   const [recommendedPlaces, setRecommendedPlaces] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showCustomDaysInput, setShowCustomDaysInput] = useState(false);
+  const [customDays, setCustomDays] = useState("");
   const navigate = useNavigate();
 
   const stateWisePlaces = {
@@ -462,17 +464,66 @@ export default function Destinations() {
 
   const handleDaysChange = (days) => {
     setSelectedDays(days);
+    
+    if (days === "custom") {
+      setShowCustomDaysInput(true);
+      return;
+    }
+    
+    setShowCustomDaysInput(false);
     let recommendedList = [];
     
     if (selectedDestination) {
       if (selectedType === "national") {
-        recommendedList = stateWisePlaces[selectedDestination.name]?.[days] || [];
+        // For custom days beyond predefined options, use the highest available day count recommendations
+        if (!isNaN(parseInt(days)) && parseInt(days) > 5) {
+          recommendedList = stateWisePlaces[selectedDestination.name]?.["5"] || [];
+        } else {
+          recommendedList = stateWisePlaces[selectedDestination.name]?.[days] || [];
+        }
       } else {
-        recommendedList = internationalPlaces[selectedDestination.name]?.[days] || [];
+        if (!isNaN(parseInt(days)) && parseInt(days) > 5) {
+          recommendedList = internationalPlaces[selectedDestination.name]?.["5"] || [];
+        } else {
+          recommendedList = internationalPlaces[selectedDestination.name]?.[days] || [];
+        }
       }
     }
     
     setRecommendedPlaces(recommendedList);
+  };
+
+  const handleCustomDaysChange = (e) => {
+    const value = e.target.value;
+    setCustomDays(value);
+  };
+
+  const applyCustomDays = () => {
+    if (customDays && !isNaN(parseInt(customDays)) && parseInt(customDays) > 0) {
+      const days = customDays.toString();
+      setSelectedDays(days);
+      
+      let recommendedList = [];
+      
+      if (selectedDestination) {
+        // For custom days beyond predefined options, use the highest available day count recommendations
+        if (parseInt(days) > 5) {
+          if (selectedType === "national") {
+            recommendedList = stateWisePlaces[selectedDestination.name]?.["5"] || [];
+          } else {
+            recommendedList = internationalPlaces[selectedDestination.name]?.["5"] || [];
+          }
+        } else {
+          if (selectedType === "national") {
+            recommendedList = stateWisePlaces[selectedDestination.name]?.[days] || [];
+          } else {
+            recommendedList = internationalPlaces[selectedDestination.name]?.[days] || [];
+          }
+        }
+      }
+      
+      setRecommendedPlaces(recommendedList);
+    }
   };
 
   // Handle dialog close
@@ -480,6 +531,8 @@ export default function Destinations() {
     setIsDialogOpen(false);
     setSelectedDays(""); // Reset selected days
     setRecommendedPlaces([]); // Reset recommended places
+    setShowCustomDaysInput(false); // Reset custom days input
+    setCustomDays(""); // Reset custom days value
   };
 
   return (
@@ -787,9 +840,45 @@ export default function Destinations() {
                           {days} Days
                         </SelectItem>
                       ))}
+                      <SelectItem
+                        value="custom"
+                        className="hover:bg-indigo-50 transition-colors text-indigo-600 font-medium"
+                      >
+                        Custom Days
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+
+                {showCustomDaysInput && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-2"
+                  >
+                    <label htmlFor="customDays" className="text-sm font-medium">
+                      Enter number of days:
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="customDays"
+                        type="number"
+                        min="1"
+                        placeholder="Enter days"
+                        value={customDays}
+                        onChange={handleCustomDaysChange}
+                        className="bg-white/50 backdrop-blur-sm border-2 border-indigo-100"
+                      />
+                      <Button 
+                        onClick={applyCustomDays}
+                        className="bg-indigo-600 text-white hover:bg-indigo-700"
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
 
                 {recommendedPlaces.length > 0 && (
                   <motion.div
