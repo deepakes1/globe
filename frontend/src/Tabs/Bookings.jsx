@@ -480,11 +480,11 @@ function Bookings() {
         <div className="modal-overlay">
           <div className="modal-content seats-modal">
             <button className="close-button" onClick={() => setShowSeatsModal(false)}>×</button>
-            <h2>Select Number of Seats</h2>
+            <h2>{selectedTransport ? "Select Number of Seats" : "Select Number of Rooms"}</h2>
             <div className="seats-container">
               <div className="seats-display">
                 <h3>{selectedOption.name}</h3>
-                <p className="price">Price per seat: {selectedOption.price}</p>
+                <p className="price">{selectedTransport ? `Price per seat: ${selectedOption.price}` : `Price per room: ${selectedOption.price}`}</p>
                 <div className="seats-input">
                   <button 
                     className="seat-btn"
@@ -507,7 +507,7 @@ function Bookings() {
                   className="confirm-seats-btn"
                   onClick={handleSeatConfirmation}
                 >
-                  Confirm Seats
+                  {selectedTransport ? "Confirm Seats" : "Confirm Rooms"}
                 </button>
               </div>
             </div>
